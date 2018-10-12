@@ -1,6 +1,27 @@
 export default {
+  mytable: {
+    id: '序号',
+    username: '学号/工号',
+    edit: '编辑',
+    role: '角色',
+    name: '姓名',
+    institute: '学院',
+    email: '邮箱',
+    actions: '操作',
+    delete: '删除'
+  },
+  dialog: {
+    cancel: '取 消',
+    confirm: '确 定'
+  },
+  role: {
+    admin: '管理员',
+    teacher: '教师',
+    ta: '助教'
+  },
   route: {
     dashboard: '首页',
+    admin: '后台用户',
     introduction: '简述',
     documentation: '文档',
     guide: '引导页',

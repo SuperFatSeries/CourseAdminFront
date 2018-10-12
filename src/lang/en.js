@@ -1,6 +1,27 @@
 export default {
+  mytable: {
+    id: 'ID',
+    username: 'Username',
+    edit: 'Edit',
+    role: 'Role',
+    name: 'Name',
+    institute: 'Institute',
+    email: 'Email',
+    actions: 'Actions',
+    delete: 'Delete'
+  },
+  dialog: {
+    cancel: 'Cancel',
+    confirm: 'Confirm'
+  },
+  role: {
+    admin: 'admin',
+    teacher: 'teacher',
+    ta: 'assistant'
+  },
   route: {
     dashboard: 'Dashboard',
+    admin: 'Admin',
     introduction: 'Introduction',
     documentation: 'Documentation',
     guide: 'Guide',

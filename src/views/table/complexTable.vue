@@ -167,9 +167,12 @@ export default {
   data() {
     return {
       tableKey: 0,
+      // 当前显示的数据
       list: null,
       total: null,
+      // load数据状态
       listLoading: true,
+      // 分页查询数据
       listQuery: {
         page: 1,
         limit: 20,
@@ -183,6 +186,7 @@ export default {
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
+      // 一条数据
       temp: {
         id: undefined,
         importance: 1,
@@ -192,19 +196,23 @@ export default {
         type: '',
         status: 'published'
       },
+      // 新增&编辑模态框的状态
       dialogFormVisible: false,
       dialogStatus: '',
+      // 模态框标题
       textMap: {
         update: 'Edit',
         create: 'Create'
       },
       dialogPvVisible: false,
       pvData: [],
+      // 新增&编辑规则
       rules: {
         type: [{ required: true, message: 'type is required', trigger: 'change' }],
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
+      // 导出的状态控制
       downloadLoading: false
     }
   },
@@ -217,7 +225,7 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
-
+        // console.log(JSON.stringify(this.list))
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false

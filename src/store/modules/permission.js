@@ -34,6 +34,10 @@ function filterAsyncRouter(routes, roles) {
   return res
 }
 
+/**
+ * 这里的代码说白了就是干了一件事，通过用户的权限和之前在router.js里面asyncRouterMap的每一个页面所需要的权限做匹配，
+ * 最后返回一个该用户能够访问路由有哪些
+ */
 const permission = {
   state: {
     routers: constantRouterMap,
