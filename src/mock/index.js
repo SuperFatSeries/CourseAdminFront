@@ -1,5 +1,5 @@
 import Mock from 'mockjs'
-import loginAPI from './login'
+// import loginAPI from './login'
 import articleAPI from './article'
 import adminAPI from './admin'
 import remoteSearchAPI from './remoteSearch'
@@ -10,9 +10,9 @@ import transactionAPI from './transaction'
 // })
 
 // 登录相关
-Mock.mock(/\/admin\/login/, 'post', loginAPI.loginByUsername)
-Mock.mock(/\/admin\/logout/, 'post', loginAPI.logout)
-Mock.mock(/\/admin\/info\.*/, 'get', loginAPI.getUserInfo)
+// Mock.mock(/\/admin\/login/, 'post', loginAPI.loginByUsername)
+// Mock.mock(/\/admin\/logout/, 'post', loginAPI.logout)
+// Mock.mock(/\/admin\/info\.*/, 'get', loginAPI.getUserInfo)
 
 // admin相关
 Mock.mock(/\/admin\/list/, 'get', adminAPI.getList)

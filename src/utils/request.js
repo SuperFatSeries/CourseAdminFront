@@ -5,7 +5,9 @@ import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.BASE_API, // api 的 base_url
+  // baseURL: process.env.BASE_API, // api 的 base_url
+  baseURL: 'http://172.18.57.145:8080',
+  // baseURL: 'http://172.18.166.180:8087',
   timeout: 5000 // request timeout
 })
 
@@ -29,7 +31,7 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    // console.log(JSON.stringify(response))
+    console.log(JSON.stringify(response))
     return response
   },
   /**
