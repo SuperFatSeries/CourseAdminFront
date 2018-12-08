@@ -172,5 +172,8 @@ export default {
     close: '关闭',
     closeOthers: '关闭其它',
     closeAll: '关闭所有'
+  },
+  notify: {
+    changeCourse: '课程切换成功, 当前课程为: '
   }
 }

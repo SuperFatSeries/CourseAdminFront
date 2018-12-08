@@ -2,6 +2,7 @@ import Mock from 'mockjs'
 import loginAPI from './login'
 import articleAPI from './article'
 import adminAPI from './admin'
+import courseAPI from './course'
 import remoteSearchAPI from './remoteSearch'
 import transactionAPI from './transaction'
 
@@ -20,6 +21,9 @@ Mock.mock(/\/admin\//, 'get', adminAPI.getAdmin)
 Mock.mock(/\/admin\//, 'post', adminAPI.addAdmin)
 Mock.mock(/\/admin\//, 'put', adminAPI.updateAdmin)
 Mock.mock(/\/admin\//, 'delete', adminAPI.deleteAdmin)
+
+// 课程相关
+Mock.mock(/\/course\//, 'get', courseAPI.getCourseList)
 
 // 文章相关
 Mock.mock(/\/article\/list/, 'get', articleAPI.getList)

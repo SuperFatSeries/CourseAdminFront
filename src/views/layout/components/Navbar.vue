@@ -26,17 +26,11 @@
       <el-dropdown class="course-name-container right-menu-item" trigger="click">
         <el-button plain>
           <i class="el-icon-caret-bottom el-icon--right"/>
-          {{ defaultCouse.name }}
+          {{ tempCourse.name }}
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item v-for="(item) in courseList" :key="item.key">
-            <span @click="changeCourse(item.key)">{{ item.name }}</span>
-          </el-dropdown-item>
-          <el-dropdown-item>
-            {{ $t('navbar.github') }}
-          </el-dropdown-item>
-          <el-dropdown-item>
-            {{ $t('navbar.logOut') }}
+            <span @click="changeCourse(item)">{{ item.name }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -76,12 +70,7 @@ import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import ThemePicker from '@/components/ThemePicker'
 import { Message } from 'element-ui'
-
-const courseList = [
-  { key: 1, name: '分布式系统原理' },
-  { key: 2, name: '现代人工智能' },
-  { key: 3, name: '系统分析与设计' }
-]
+import { getCourseList } from '@/api/course'
 
 export default {
   components: {
@@ -95,8 +84,8 @@ export default {
   },
   data() {
     return {
-      defaultCouse: { key: 1, name: '分布式系统原理' },
-      courseList
+      tempCourse: { key: 1, name: '分布式系统原理' },
+      courseList: []
     }
   },
   computed: {
@@ -107,6 +96,14 @@ export default {
       'device'
     ])
   },
+  created() {
+    getCourseList().then(response => {
+      console.log(response.data)
+      this.courseList = response.data
+    }).catch((error) => {
+      console.log(error)
+    })
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
@@ -116,9 +113,9 @@ export default {
         location.reload()// In order to re-instantiate the vue-router object to avoid bugs
       })
     },
-    changeCourse(courseId) {
-      this.$store.dispatch('ChangeCourse', courseId).then(() => {
-        Message.success('Verification failed, please login again')
+    changeCourse(courseItem) {
+      this.$store.dispatch('ChangeCourse', courseItem.key).then(() => {
+        Message.success(this.$t('notify.changeCourse') + courseItem.name)
       })
     }
   }

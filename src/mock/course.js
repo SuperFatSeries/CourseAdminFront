@@ -46,22 +46,5 @@ export default {
       items: mockList,
       test: pageList.length
     }
-  },
-  getAdmin: (config) => {
-    const { id } = param2Obj(config.url)
-    for (const admin of List) {
-      if (admin.id === +id) {
-        return admin
-      }
-    }
-  },
-  addAdmin: () => ({
-    data: 'success'
-  }),
-  updateAdmin: () => ({
-    data: 'success'
-  }),
-  deleteAdmin: () => ({
-    data: 'success'
-  })
+  }
 }

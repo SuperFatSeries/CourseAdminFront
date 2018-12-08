@@ -172,5 +172,8 @@ export default {
     close: 'Close',
     closeOthers: 'Close Others',
     closeAll: 'Close All'
+  },
+  notify: {
+    changeCourse: 'course switch success, temporarily course is: '
   }
 }
