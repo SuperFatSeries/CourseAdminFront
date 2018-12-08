@@ -1,4 +1,4 @@
-import { loginByUsername, logout, getUserInfo, test } from '@/api/login'
+import { loginByUsername, logout, getUserInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -9,7 +9,7 @@ const user = {
     token: getToken(),
     name: '',
     avatar: '',
-    introduction: '',
+    course: '',
     roles: [],
     setting: {
       articlePlatform: []
@@ -23,8 +23,8 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_INTRODUCTION: (state, introduction) => {
-      state.introduction = introduction
+    SET_COURSE: (state, course) => {
+      state.course = course
     },
     SET_SETTING: (state, setting) => {
       state.setting = setting
@@ -59,13 +59,10 @@ const user = {
       })
     },
 
-    Test({ commit }) {
-      return new Promise((resolve, reject) => {
-        test().then(response => {
-          console.log(JSON.stringify(response.data))
-        }).catch(error => {
-          reject(error)
-        })
+    ChangeCourse({ commit }, courseId) {
+      return new Promise((resolve) => {
+        commit('SET_COURSE', courseId)
+        resolve()
       })
     },
 
@@ -86,7 +83,7 @@ const user = {
 
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
-          commit('SET_INTRODUCTION', data.introduction)
+          commit('SET_COURSE', data.course)
           resolve(response)
         }).catch(error => {
           reject(error)
@@ -141,7 +138,7 @@ const user = {
           commit('SET_ROLES', data.roles)
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
-          commit('SET_INTRODUCTION', data.introduction)
+          commit('SET_COURSE', data.course)
           dispatch('GenerateRoutes', data) // 动态修改权限后 重绘侧边菜单
           resolve()
         })
@@ -149,5 +146,4 @@ const user = {
     }
   }
 }
-
 export default user

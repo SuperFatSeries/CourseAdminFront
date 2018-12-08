@@ -23,6 +23,24 @@
         </el-tooltip>
       </template>
 
+      <el-dropdown class="course-name-container right-menu-item" trigger="click">
+        <el-button plain>
+          <i class="el-icon-caret-bottom el-icon--right"/>
+          {{ defaultCouse.name }}
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-for="(item) in courseList" :key="item.key">
+            <span @click="changeCourse(item.key)">{{ item.name }}</span>
+          </el-dropdown-item>
+          <el-dropdown-item>
+            {{ $t('navbar.github') }}
+          </el-dropdown-item>
+          <el-dropdown-item>
+            {{ $t('navbar.logOut') }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -57,6 +75,13 @@ import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import LangSelect from '@/components/LangSelect'
 import ThemePicker from '@/components/ThemePicker'
+import { Message } from 'element-ui'
+
+const courseList = [
+  { key: 1, name: '分布式系统原理' },
+  { key: 2, name: '现代人工智能' },
+  { key: 3, name: '系统分析与设计' }
+]
 
 export default {
   components: {
@@ -67,6 +92,12 @@ export default {
     SizeSelect,
     LangSelect,
     ThemePicker
+  },
+  data() {
+    return {
+      defaultCouse: { key: 1, name: '分布式系统原理' },
+      courseList
+    }
   },
   computed: {
     ...mapGetters([
@@ -83,6 +114,11 @@ export default {
     logout() {
       this.$store.dispatch('LogOut').then(() => {
         location.reload()// In order to re-instantiate the vue-router object to avoid bugs
+      })
+    },
+    changeCourse(courseId) {
+      this.$store.dispatch('ChangeCourse', courseId).then(() => {
+        Message.success('Verification failed, please login again')
       })
     }
   }
@@ -125,6 +161,27 @@ export default {
     }
     .theme-switch {
       vertical-align: 15px;
+    }
+    .course-name-container {
+      height: 40px;
+      margin-right: 10px;
+      position: relative;
+      bottom: 15px;
+      .course-name {
+          box-sizing: inherit;
+          font-size: 14px;
+          color: #606266;
+          font-weight: 500;
+          text-align: center;
+          line-height: 1;
+          white-space: nowrap;
+      }
+      .el-icon-caret-bottom {
+        position: absolute;
+        right: -20px;
+        top: 25px;
+        font-size: 12px;
+      }
     }
     .avatar-container {
       height: 50px;

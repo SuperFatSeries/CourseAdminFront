@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import md5 from 'js-md5'
+// import md5 from 'js-md5'
 
 export function test() {
   return request({
@@ -9,14 +9,15 @@ export function test() {
 }
 
 export function loginByUsername(username, password) {
-  console.log(md5(password))
+  const data = {
+    username,
+    password
+  }
+  // console.log(data)
   return request({
     url: '/admin/login',
     method: 'put',
-    data: {
-      id: username,
-      password: md5(password).toUpperCase()
-    }
+    data
   })
 }
 
@@ -30,7 +31,8 @@ export function logout() {
 export function getUserInfo(token) {
   return request({
     url: '/admin/info',
-    method: 'get'
+    method: 'get',
+    params: { token }
   })
 }
 
