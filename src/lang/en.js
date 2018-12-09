@@ -8,7 +8,8 @@ export default {
     institute: 'Institute',
     email: 'Email',
     actions: 'Actions',
-    delete: 'Delete'
+    delete: 'Delete',
+    setAsTA: 'Set as TA'
   },
   dialog: {
     cancel: 'Cancel',
@@ -17,13 +18,14 @@ export default {
   role: {
     admin: 'admin',
     teacher: 'teacher',
-    ta: 'assistant'
+    ta: 'TA'
   },
   route: {
     dashboard: 'Dashboard',
-    admin: 'Admin',
+    Admin: 'User Management',
+    admin: 'Admin Management',
+    ta: 'TA Management',
     introduction: 'Introduction',
-    documentation: 'Documentation',
     guide: 'Guide',
     permission: 'Permission',
     pagePermission: 'Page Permission',
@@ -44,19 +46,7 @@ export default {
     backToTop: 'BackToTop',
     dragDialog: 'Drag Dialog',
     dragKanban: 'Drag Kanban',
-    charts: 'Charts',
-    keyboardChart: 'Keyboard Chart',
-    lineChart: 'Line Chart',
-    mixChart: 'Mix Chart',
     example: 'Example',
-    nested: 'Nested Routes',
-    menu1: 'Menu 1',
-    'menu1-1': 'Menu 1-1',
-    'menu1-2': 'Menu 1-2',
-    'menu1-2-1': 'Menu 1-2-1',
-    'menu1-2-2': 'Menu 1-2-2',
-    'menu1-3': 'Menu 1-3',
-    menu2: 'Menu 2',
     Table: 'Table',
     dynamicTable: 'Dynamic Table',
     dragTable: 'Drag Table',
@@ -64,25 +54,14 @@ export default {
     complexTable: 'Complex Table',
     treeTable: 'Tree Table',
     customTreeTable: 'Custom TreeTable',
-    tab: 'Tab',
     form: 'Form',
     createArticle: 'Create Article',
     editArticle: 'Edit Article',
     articleList: 'Article List',
-    errorPages: 'Error Pages',
-    page401: '401',
-    page404: '404',
-    errorLog: 'Error Log',
     excel: 'Excel',
     exportExcel: 'Export Excel',
     selectExcel: 'Export Selected',
-    uploadExcel: 'Upload Excel',
-    zip: 'Zip',
-    exportZip: 'Export Zip',
-    theme: 'Theme',
-    clipboardDemo: 'Clipboard',
-    i18n: 'I18n',
-    externalLink: 'External Link'
+    uploadExcel: 'Upload Excel'
   },
   navbar: {
     logOut: 'Log Out',
@@ -173,7 +152,13 @@ export default {
     closeOthers: 'Close Others',
     closeAll: 'Close All'
   },
+  modal: {
+    add: 'Add'
+  },
   notify: {
-    changeCourse: 'course switch success, temporarily course is: '
+    changeCourse: 'course switch success, temporary course is: '
+  },
+  confirm: {
+    setAsTA: 'Confirm to set as TA of temporary course?'
   }
 }

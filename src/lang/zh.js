@@ -8,7 +8,8 @@ export default {
     institute: '学院',
     email: '邮箱',
     actions: '操作',
-    delete: '删除'
+    delete: '删除',
+    setAsTA: '设为助教'
   },
   dialog: {
     cancel: '取 消',
@@ -21,9 +22,10 @@ export default {
   },
   route: {
     dashboard: '首页',
-    admin: '后台用户',
+    Admin: '用户管理',
+    admin: '后台用户管理',
+    ta: '助教管理',
     introduction: '简述',
-    documentation: '文档',
     guide: '引导页',
     permission: '权限测试页',
     pagePermission: '页面权限',
@@ -44,19 +46,7 @@ export default {
     backToTop: '返回顶部',
     dragDialog: '拖拽 Dialog',
     dragKanban: '可拖拽看板',
-    charts: '图表',
-    keyboardChart: '键盘图表',
-    lineChart: '折线图',
-    mixChart: '混合图表',
     example: '综合实例',
-    nested: '路由嵌套',
-    menu1: '菜单1',
-    'menu1-1': '菜单1-1',
-    'menu1-2': '菜单1-2',
-    'menu1-2-1': '菜单1-2-1',
-    'menu1-2-2': '菜单1-2-2',
-    'menu1-3': '菜单1-3',
-    menu2: '菜单2',
     Table: 'Table',
     dynamicTable: '动态Table',
     dragTable: '拖拽Table',
@@ -64,25 +54,14 @@ export default {
     complexTable: '综合Table',
     treeTable: '树形表格',
     customTreeTable: '自定义树表',
-    tab: 'Tab',
     form: '表单',
     createArticle: '创建文章',
     editArticle: '编辑文章',
     articleList: '文章列表',
-    errorPages: '错误页面',
-    page401: '401',
-    page404: '404',
-    errorLog: '错误日志',
     excel: 'Excel',
     exportExcel: 'Export Excel',
     selectExcel: 'Export Selected',
-    uploadExcel: 'Upload Excel',
-    zip: 'Zip',
-    exportZip: 'Export Zip',
-    theme: '换肤',
-    clipboardDemo: 'Clipboard',
-    i18n: '国际化',
-    externalLink: '外链'
+    uploadExcel: 'Upload Excel'
   },
   navbar: {
     logOut: '退出登录',
@@ -173,7 +152,13 @@ export default {
     closeOthers: '关闭其它',
     closeAll: '关闭所有'
   },
+  modal: {
+    add: '新增'
+  },
   notify: {
     changeCourse: '课程切换成功, 当前课程为: '
+  },
+  confirm: {
+    setAsTA: '确认设置为当前课程助教吗？'
   }
 }

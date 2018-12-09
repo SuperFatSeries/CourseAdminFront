@@ -94,6 +94,9 @@ import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
 const roleOptions = [
+  // { key: 0, display_name: this.$t('role.admin') },
+  // { key: 1, display_name: this.$t('role.teacher') },
+  // { key: 2, display_name: this.$t('role.ta') }
   { key: 0, display_name: 'Admin' },
   { key: 1, display_name: 'Teacher' },
   { key: 2, display_name: 'TA' }

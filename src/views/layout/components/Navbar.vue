@@ -115,7 +115,9 @@ export default {
     },
     changeCourse(courseItem) {
       this.$store.dispatch('ChangeCourse', courseItem.key).then(() => {
+        this.tempCourse = courseItem
         Message.success(this.$t('notify.changeCourse') + courseItem.name)
+        // console.log(this.$store.state.user.course)
       })
     }
   }

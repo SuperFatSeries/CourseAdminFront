@@ -2,17 +2,18 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input :placeholder="$t('mytable.name')" v-model="listQuery.name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
-      <el-select v-model="listQuery.role" :placeholder="$t('mytable.role')" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in roleOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+      <el-select v-model="listQuery.role" :placeholder="$t('role.ta')" clearable style="width: 90px" class="filter-item" disabled="true">
+        <el-option key="2" label="$t('role.ta')" value="$t('role.ta')"/>
       </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
     </div>
 
     <el-table
       v-loading="listLoading"
       :key="tableKey"
-      :data="list.slice((listQuery.page-1)*listQuery.limit, listQuery.page*listQuery.limit)"
+      :data="list"
       border
       fit
       highlight-current-row
@@ -49,7 +50,7 @@
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="danger" size="mini" @click="handleDelete(scope.row)">{{ $t('mytable.delete') }}</el-button>
+          <el-button :disabled="scope.row.state !== undefined || scope.row.state === false" type="primary" size="small" @click="handleSetTA(scope.row)">{{ $t('mytable.setAsTA') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -57,15 +58,44 @@
     <div class="pagination-container">
       <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
     </div>
+
+    <el-dialog :title="$t('modal.add')" :visible.sync="dialogFormVisible">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+        <el-form-item :label="$t('mytable.role')" prop="role">
+          <el-select v-model="temp.role" :placeholder="$t('role.ta')" class="filter-item" disabled="true">
+            <el-option key="2" label="$t('role.ta')" value="$t('role.ta')"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('mytable.username')" prop="username">
+          <el-input v-model="temp.username"/>
+        </el-form-item>
+        <el-form-item :label="$t('mytable.name')" prop="name">
+          <el-input v-model="temp.name"/>
+        </el-form-item>
+        <el-form-item :label="$t('mytable.institute')" prop="institute">
+          <el-input v-model="temp.institute"/>
+        </el-form-item>
+        <el-form-item :label="$t('mytable.email')" prop="email">
+          <el-input v-model="temp.email"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="createData()">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, deleteAdmin } from '@/api/admin'
+import { fetchList, addAdmin } from '@/api/admin'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
 const roleOptions = [
+  // { key: 0, display_name: this.$t('role.admin') },
+  // { key: 1, display_name: this.$t('role.teacher') },
+  // { key: 2, display_name: this.$t('role.ta') }
   { key: 0, display_name: 'Admin' },
   { key: 1, display_name: 'Teacher' },
   { key: 2, display_name: 'TA' }
@@ -105,7 +135,7 @@ export default {
         page: 1,
         limit: 20,
         name: undefined,
-        role: undefined,
+        role: 2,
         institute: undefined,
         sort: '+id'
       },
@@ -120,16 +150,14 @@ export default {
         institute: '',
         email: ''
       },
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
+      dialogFormVisible: false,
       rules: {
         role: [{ required: true, message: 'role is required', trigger: 'change' }],
         username: [{ required: true, message: 'username is required', trigger: 'blur' }],
         name: [{ required: true, message: 'name is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      setAsTA: false
     }
   },
   created() {
@@ -142,7 +170,6 @@ export default {
       fetchList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
-        console.log(this.list.length)
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
@@ -157,10 +184,12 @@ export default {
     // 每页显示条数
     handleSizeChange(val) {
       this.listQuery.limit = val
+      this.getList()
     },
     // 换页
     handleCurrentChange(val) {
       this.listQuery.page = val
+      this.getList()
     },
     resetTemp() {
       this.temp = {
@@ -172,18 +201,36 @@ export default {
         email: ''
       }
     },
-    handleDelete(row) {
-      this.$confirm('确认删除？').then(_ => {
-        deleteAdmin(row.username).then(() => {
-          this.$notify({
-            title: '成功',
-            message: '删除成功',
-            type: 'success',
-            duration: 2000
+    // 打开新增模态框
+    handleCreate() {
+      this.resetTemp()
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    // 确认新增数据
+    createData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          addAdmin(this.temp).then(() => {
+            this.list.unshift(this.temp)
+            this.dialogFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '创建成功',
+              type: 'success',
+              duration: 2000
+            })
           })
-          const index = this.list.indexOf(row)
-          this.list.splice(index, 1)
-        })
+        }
+      })
+    },
+    // 设为当前课程TA
+    handleSetTA(row) {
+      this.$confirm('确认删除？').then(_ => {
+        row.state = true
       })
     },
     handleDownload() {
