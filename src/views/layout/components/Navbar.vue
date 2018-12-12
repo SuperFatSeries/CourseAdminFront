@@ -25,8 +25,8 @@
 
       <el-dropdown class="course-name-container right-menu-item" trigger="click">
         <el-button plain>
-          <i class="el-icon-caret-bottom el-icon--right"/>
           {{ tempCourse.name }}
+          <i class="el-icon-caret-bottom"/>
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item v-for="(item) in courseList" :key="item.key">
@@ -176,8 +176,8 @@ export default {
           white-space: nowrap;
       }
       .el-icon-caret-bottom {
-        position: absolute;
-        right: -20px;
+        // position: relative;
+        // right: -20px;
         top: 25px;
         font-size: 12px;
       }

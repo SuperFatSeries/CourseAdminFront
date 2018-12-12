@@ -3,11 +3,7 @@ import { param2Obj } from '@/utils'
 
 const List = []
 const count = 100
-const courseList = [
-  { key: 1, name: '分布式系统原理' },
-  { key: 2, name: '现代人工智能' },
-  { key: 3, name: '系统分析与设计' }
-]
+const courseId = [0, 1, 2]
 const baseInstitute = '数据科学与计算机学院'
 
 for (let i = 0; i < count; i++) {
@@ -17,14 +13,12 @@ for (let i = 0; i < count; i++) {
     role: '@integer(0, 2)',
     name: Mock.Random.cname(),
     institute: baseInstitute,
-    email: Mock.mock('@EMAIL()')
+    email: Mock.mock('@EMAIL()'),
+    'ta|1': courseId
   }))
 }
 
 export default {
-  getCourseList: () => {
-    return courseList
-  },
   getList: config => {
     const { name, role, institute, page = 1, limit = 20, sort } = param2Obj(config.url)
 

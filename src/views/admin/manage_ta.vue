@@ -50,7 +50,7 @@
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button :disabled="scope.row.state !== undefined || scope.row.state === false" type="primary" size="small" @click="handleSetTA(scope.row)">{{ $t('mytable.setAsTA') }}</el-button>
+          <el-button :disabled="handleDisable(row)" type="primary" size="small" @click="handleSetTA(scope.row)">{{ $t('mytable.setAsTA') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -148,7 +148,8 @@ export default {
         role: '',
         name: '',
         institute: '',
-        email: ''
+        email: '',
+        ta: []
       },
       dialogFormVisible: false,
       rules: {
@@ -227,10 +228,17 @@ export default {
         }
       })
     },
+    handleDisable(row) {
+      if (row.disable === undefined) {
+        row.disable = false
+      }
+      return row.disable
+    },
     // 设为当前课程TA
     handleSetTA(row) {
       this.$confirm('确认删除？').then(_ => {
-        row.state = true
+        // console.log(row.disable)
+        row.disable = true
       })
     },
     handleDownload() {
