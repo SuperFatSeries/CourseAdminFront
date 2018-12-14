@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input :placeholder="$t('mytable.name')" v-model="listQuery.name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-input :placeholder="$t('mytable.adminName')" v-model="listQuery.name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
       <el-select v-model="listQuery.role" :placeholder="$t('mytable.role')" clearable style="width: 90px" class="filter-item">
         <el-option v-for="item in roleOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
       </el-select>

@@ -3,7 +3,7 @@ import { param2Obj } from '@/utils'
 
 const List = []
 const count = 100
-const courseId = [0, 1, 2]
+// const courseId = [0, 1, 2]
 const baseInstitute = '数据科学与计算机学院'
 
 for (let i = 0; i < count; i++) {
@@ -14,7 +14,7 @@ for (let i = 0; i < count; i++) {
     name: Mock.Random.cname(),
     institute: baseInstitute,
     email: Mock.mock('@EMAIL()'),
-    'ta|1': courseId
+    ta: ['@integer(0, 2)']
   }))
 }
 

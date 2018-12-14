@@ -98,7 +98,7 @@ export default {
   },
   created() {
     getCourseList().then(response => {
-      console.log(response.data)
+      // console.log(response.data)
       this.courseList = response.data
     }).catch((error) => {
       console.log(error)

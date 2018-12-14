@@ -2,14 +2,19 @@ export default {
   mytable: {
     id: '序号',
     username: '学号/工号',
+    name: '姓名',
     edit: '编辑',
     role: '角色',
-    name: '姓名',
+    adminName: '姓名',
     institute: '学院',
     email: '邮箱',
     actions: '操作',
     delete: '删除',
-    setAsTA: '设为助教'
+    setAsTA: '设为助教',
+    cancelTA: '取消助教',
+    title: '标题',
+    notificationContent: '内容',
+    createTime: '创建时间'
   },
   dialog: {
     cancel: '取 消',

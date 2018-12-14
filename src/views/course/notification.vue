@@ -1,10 +1,9 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input :placeholder="$t('mytable.adminName')" v-model="listQuery.name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
-      <el-select v-model="listQuery.role" :placeholder="$t('role.ta')" clearable style="width: 90px" class="filter-item" disabled="true">
-        <el-option key="2" label="$t('role.ta')" value="$t('role.ta')"/>
-      </el-select>
+      <el-input :placeholder="$t('mytable.title')" v-model="listQuery.title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-date-picker v-model="listQuery.startTime" type="datetime" format="yyyy-MM-dd" placeholder="选择开始日期"/>
+      <el-date-picker v-model="listQuery.endTime" type="datetime" format="yyyy-MM-dd" placeholder="选择开始日期"/>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
@@ -23,35 +22,25 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.username')" width="150px" align="center">
+      <el-table-column :label="$t('mytable.title')" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
+          <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.name')" min-width="150px" align="center">
+      <el-table-column :label="$t('mytable.notificationContent')" min-width="250px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span>{{ scope.row.content }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.institute')" min-width="200px" align="center">
+      <el-table-column :label="$t('mytable.createTime')" min-width="200px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.institute }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('mytable.email')" align="center" min-width="200">
-        <template slot-scope="scope">
-          <span>{{ scope.row.email }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('mytable.role')" width="110px" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.role | roleTagFilter">{{ scope.row.role | roleFilter }}</el-tag>
+          <span>{{ scope.row.create_time }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.isTa" type="success" size="small" icon="el-icon-close-circle" @click="handleCancelTA(scope.row)">{{ $t('mytable.cancelTA') }}</el-button>
-          <el-button v-else type="primary" size="small" icon="el-icon-edit" @click="handleSetTA(scope.row)">{{ $t('mytable.setAsTA') }}</el-button>
+          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('mytable.edit') }}</el-button>
+          <el-button type="danger" size="mini" @click="handleDelete(scope.row)">{{ $t('mytable.delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -60,11 +49,11 @@
       <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
     </div>
 
-    <el-dialog :title="$t('modal.add')" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('mytable.role')" prop="role">
-          <el-select v-model="temp.role" :placeholder="$t('role.ta')" class="filter-item" disabled="true">
-            <el-option key="2" label="$t('role.ta')" value="$t('role.ta')"/>
+          <el-select v-model="temp.role" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in roleOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('mytable.username')" prop="username">
@@ -82,14 +71,14 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="createData()">{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, addAdmin } from '@/api/admin'
+import { fetchList, addAdmin, updateAdmin, deleteAdmin } from '@/api/admin'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
@@ -135,9 +124,9 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        name: undefined,
-        role: 2,
-        institute: undefined,
+        title: undefined,
+        startTime: undefined,
+        endTime: undefined,
         sort: '+id'
       },
       roleOptions,
@@ -149,17 +138,20 @@ export default {
         role: '',
         name: '',
         institute: '',
-        email: '',
-        ta: []
+        email: ''
       },
       dialogFormVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: 'Edit',
+        create: 'Create'
+      },
       rules: {
         role: [{ required: true, message: 'role is required', trigger: 'change' }],
         username: [{ required: true, message: 'username is required', trigger: 'blur' }],
         name: [{ required: true, message: 'name is required', trigger: 'blur' }]
       },
-      downloadLoading: false,
-      setAsTA: false
+      downloadLoading: false
     }
   },
   created() {
@@ -170,22 +162,12 @@ export default {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        const courseId = this.$store.state.user.course
-        const items = response.data.items
+        this.list = response.data.items
         this.total = response.data.total
-        this.list = items.map(v => {
-          if (v.ta.indexOf(courseId) === -1) {
-            this.$set(v, 'isTa', false) // https://vuejs.org/v2/guide/reactivity.html
-          } else {
-            this.$set(v, 'isTa', true)
-          }
-          console.log(v.name + ' ' + JSON.stringify(v.ta) + ' ' + v.isTa)
-          return v
-        })
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
-        }, 0.5 * 1000)
+        }, 1.5 * 1000)
       })
     },
     // 过滤
@@ -216,6 +198,7 @@ export default {
     // 打开新增模态框
     handleCreate() {
       this.resetTemp()
+      this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
@@ -239,23 +222,51 @@ export default {
         }
       })
     },
-    // 设为当前课程TA
-    handleSetTA(row) {
-      this.$confirm('确认设为当前课程助教？').then(_ => {
-        row.isTa = true
-        this.$message({
-          message: '设置成功',
-          type: 'success'
-        })
+    // 打开编辑模态框
+    handleUpdate(row) {
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
       })
     },
-    // 取消当前课程TA
-    handleCancelTA(row) {
-      this.$confirm('确认取消当前课程助教？').then(_ => {
-        row.isTa = false
-        this.$message({
-          message: '取消成功',
-          type: 'success'
+    // 确认编辑数据
+    updateData() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          const tempData = Object.assign({}, this.temp)
+          updateAdmin(tempData.username, tempData).then(() => {
+            // 替代数据
+            for (const v of this.list) {
+              if (v.username === this.temp.username) {
+                const index = this.list.indexOf(v)
+                this.list.splice(index, 1, this.temp)
+                break
+              }
+            }
+            this.dialogFormVisible = false
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+    handleDelete(row) {
+      this.$confirm('确认删除？').then(_ => {
+        deleteAdmin(row.username).then(() => {
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+          const index = this.list.indexOf(row)
+          this.list.splice(index, 1)
         })
       })
     },

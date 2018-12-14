@@ -2,14 +2,19 @@ export default {
   mytable: {
     id: 'ID',
     username: 'Username',
+    name: 'Name',
     edit: 'Edit',
     role: 'Role',
-    name: 'Name',
+    adminName: 'Name',
     institute: 'Institute',
     email: 'Email',
     actions: 'Actions',
     delete: 'Delete',
-    setAsTA: 'Set as TA'
+    setAsTA: 'Set as TA',
+    cancelTA: 'Cancel TA',
+    title: 'Title',
+    notificationContent: 'Content',
+    createTime: 'Create Time'
   },
   dialog: {
     cancel: 'Cancel',
