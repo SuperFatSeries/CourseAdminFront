@@ -17,7 +17,23 @@ const store = new Vuex.Store({
     tagsView,
     user
   },
-  getters
+  getters,
+  state: {
+    courseId: ''
+  },
+  mutations: {
+    SET_COURSE: (state, course) => {
+      state.courseId = course
+    }
+  },
+  actions: {
+    test({ commit }, courseId) {
+      return new Promise((resolve) => {
+        commit('SET_COURSE', courseId)
+        resolve()
+      })
+    }
+  }
 })
 
 export default store

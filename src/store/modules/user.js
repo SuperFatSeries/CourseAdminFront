@@ -9,7 +9,6 @@ const user = {
     token: getToken(),
     name: '',
     avatar: '',
-    course: '',
     roles: [],
     setting: {
       articlePlatform: []
@@ -22,9 +21,6 @@ const user = {
     },
     SET_TOKEN: (state, token) => {
       state.token = token
-    },
-    SET_COURSE: (state, course) => {
-      state.course = course
     },
     SET_SETTING: (state, setting) => {
       state.setting = setting
@@ -56,13 +52,6 @@ const user = {
         }).catch(error => {
           reject(error)
         })
-      })
-    },
-
-    ChangeCourse({ commit }, courseId) {
-      return new Promise((resolve) => {
-        commit('SET_COURSE', courseId)
-        resolve()
       })
     },
 

@@ -109,9 +109,14 @@ const roleKeyValue = roleOptions.reduce((acc, cur) => {
 }, {})
 
 export default {
-  name: 'ComplexTable',
+  name: 'ManageTA',
   directives: {
     waves
+  },
+  compute: {
+    listenCourse() {
+      return this.$store.state.user.course
+    }
   },
   filters: {
     roleTagFilter(role) {
@@ -162,6 +167,12 @@ export default {
       setAsTA: false
     }
   },
+  watch: {
+    listenCourse: function(courseId) {
+      console.log('course id change:', courseId)
+      this.getList()
+    }
+  },
   created() {
     this.getList()
   },
@@ -179,7 +190,7 @@ export default {
           } else {
             this.$set(v, 'isTa', true)
           }
-          console.log(v.name + ' ' + JSON.stringify(v.ta) + ' ' + v.isTa)
+          // console.log(v.name + ' ' + JSON.stringify(v.ta) + ' ' + v.isTa)
           return v
         })
         // Just to simulate the time of the request

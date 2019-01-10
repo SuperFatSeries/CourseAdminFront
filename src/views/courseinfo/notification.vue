@@ -72,11 +72,9 @@ import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
 export default {
-  name: 'ComplexTable',
+  name: 'Notification',
   directives: {
     waves
-  },
-  filters: {
   },
   data() {
     return {
@@ -99,7 +97,7 @@ export default {
         content: ''
       },
       dialogFormVisible: false,
-      dialogStatus: '',
+      dialogStatus: 'create',
       rules: {
         role: [{ required: true, message: 'role is required', trigger: 'change' }],
         username: [{ required: true, message: 'username is required', trigger: 'blur' }],
@@ -110,6 +108,14 @@ export default {
   },
   created() {
     this.getList()
+    this.$store.watch(
+      (state) => {
+        return this.$store.state.courseId
+      },
+      (nVal, oVal) => {
+        console.log('course id change:', nVal)
+        this.getList()
+      })
   },
   methods: {
     // 获取列表
@@ -151,6 +157,7 @@ export default {
     },
     // 打开新增模态框
     handleCreate() {
+      console.log(this.course)
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
