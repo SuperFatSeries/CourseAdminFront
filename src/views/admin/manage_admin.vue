@@ -60,7 +60,7 @@
       <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
     </div>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="$t('dialog.' + dialogStatus)" :visible.sync="dialogFormVisible" width="550px">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('mytable.role')" prop="role">
           <el-select v-model="temp.role" class="filter-item" placeholder="Please select">
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { fetchList, addAdmin, updateAdmin, deleteAdmin } from '@/api/admin'
+import { fetchList, add, update, delete_ } from '@/api/admin'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
@@ -153,10 +153,6 @@ export default {
       },
       dialogFormVisible: false,
       dialogStatus: '',
-      textMap: {
-        update: 'Edit',
-        create: 'Create'
-      },
       rules: {
         role: [{ required: true, message: 'role is required', trigger: 'change' }],
         username: [{ required: true, message: 'username is required', trigger: 'blur' }],
@@ -220,7 +216,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          addAdmin(this.temp).then(() => {
+          add(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -247,7 +243,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          updateAdmin(tempData.username, tempData).then(() => {
+          update(tempData.username, tempData).then(() => {
             // 替代数据
             for (const v of this.list) {
               if (v.username === this.temp.username) {
@@ -269,7 +265,7 @@ export default {
     },
     handleDelete(row) {
       this.$confirm('确认删除？').then(_ => {
-        deleteAdmin(row.username).then(() => {
+        delete_(row.username).then(() => {
           this.$notify({
             title: '成功',
             message: '删除成功',

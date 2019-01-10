@@ -97,6 +97,29 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/courseinfo',
+    component: Layout,
+    redirect: '/courseinfo/notification',
+    meta: {
+      title: 'Courseinfo',
+      icon: 'guide'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/courseinfo/notification'),
+        name: 'Notification',
+        meta: { title: 'notification', noCache: true }
+      },
+      {
+        path: 'courseware',
+        component: () => import('@/views/courseinfo/notification'),
+        name: 'Courseware',
+        meta: { title: 'courseware', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/guide',
     component: Layout,
     redirect: '/guide/index',

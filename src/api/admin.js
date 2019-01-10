@@ -8,7 +8,7 @@ export function fetchList(query) {
   })
 }
 
-export function fetchAdmin(id) {
+export function fetch(id) {
   return request({
     url: '/admin/',
     method: 'get',
@@ -16,7 +16,7 @@ export function fetchAdmin(id) {
   })
 }
 
-export function addAdmin(data) {
+export function add(data) {
   return request({
     url: '/admin/',
     method: 'post',
@@ -24,7 +24,7 @@ export function addAdmin(data) {
   })
 }
 
-export function updateAdmin(id, data) {
+export function update(id, data) {
   return request({
     url: '/admin/',
     method: 'put',
@@ -33,7 +33,7 @@ export function updateAdmin(id, data) {
   })
 }
 
-export function deleteAdmin(id) {
+export function delete_(id) {
   console.log('deleteAdmin:' + id)
   return request({
     url: '/admin/',

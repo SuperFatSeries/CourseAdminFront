@@ -3,6 +3,9 @@ export default {
     id: '序号',
     username: '学号/工号',
     name: '姓名',
+    coursewareName: '课件名',
+    remark: '备注',
+    downloads: '下载次数',
     edit: '编辑',
     role: '角色',
     adminName: '姓名',
@@ -17,6 +20,8 @@ export default {
     createTime: '创建时间'
   },
   dialog: {
+    create: '新建',
+    update: '编辑',
     cancel: '取 消',
     confirm: '确 定'
   },
@@ -30,6 +35,9 @@ export default {
     Admin: '用户管理',
     admin: '后台用户管理',
     ta: '助教管理',
+    Courseinfo: '课程信息',
+    notification: '通知管理',
+    courseware: '课件管理',
     introduction: '简述',
     guide: '引导页',
     permission: '权限测试页',
@@ -156,9 +164,6 @@ export default {
     close: '关闭',
     closeOthers: '关闭其它',
     closeAll: '关闭所有'
-  },
-  modal: {
-    add: '新增'
   },
   notify: {
     changeCourse: '课程切换成功, 当前课程为: '

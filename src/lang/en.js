@@ -3,6 +3,9 @@ export default {
     id: 'ID',
     username: 'Username',
     name: 'Name',
+    coursewareName: 'courseware name',
+    remark: 'remark',
+    downloads: 'downloads',
     edit: 'Edit',
     role: 'Role',
     adminName: 'Name',
@@ -17,6 +20,8 @@ export default {
     createTime: 'Create Time'
   },
   dialog: {
+    create: 'create',
+    update: 'edit',
     cancel: 'Cancel',
     confirm: 'Confirm'
   },
@@ -27,9 +32,12 @@ export default {
   },
   route: {
     dashboard: 'Dashboard',
-    Admin: 'User Management',
-    admin: 'Admin Management',
-    ta: 'TA Management',
+    Admin: 'User',
+    admin: 'Admin',
+    ta: 'Teacher Assistant',
+    Courseinfo: 'Course Info',
+    notification: 'Notification',
+    courseware: 'Courseware',
     introduction: 'Introduction',
     guide: 'Guide',
     permission: 'Permission',
@@ -156,9 +164,6 @@ export default {
     close: 'Close',
     closeOthers: 'Close Others',
     closeAll: 'Close All'
-  },
-  modal: {
-    add: 'Add'
   },
   notify: {
     changeCourse: 'course switch success, temporary course is: '

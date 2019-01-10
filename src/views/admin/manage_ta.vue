@@ -60,7 +60,7 @@
       <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30,50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
     </div>
 
-    <el-dialog :title="$t('modal.add')" :visible.sync="dialogFormVisible">
+    <el-dialog :title="$t('dialog.create')" :visible.sync="dialogFormVisible" width="550px">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('mytable.role')" prop="role">
           <el-select v-model="temp.role" :placeholder="$t('role.ta')" class="filter-item" disabled="true">
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { fetchList, addAdmin } from '@/api/admin'
+import { fetchList, add } from '@/api/admin'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
@@ -226,7 +226,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          addAdmin(this.temp).then(() => {
+          add(this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
