@@ -1,7 +1,10 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input :placeholder="$t('mytable.coursewareName')" v-model="listQuery.title" style="width: 200px; margin-right: 20px" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-input :placeholder="$t('mytable.adminName')" v-model="listQuery.name" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
+      <el-select v-model="listQuery.role" :placeholder="$t('mytable.role')" clearable style="width: 90px" class="filter-item">
+        <el-option v-for="item in roleOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+      </el-select>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">{{ $t('table.search') }}</el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">{{ $t('table.add') }}</el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">{{ $t('table.export') }}</el-button>
@@ -20,19 +23,29 @@
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.coursewareName')" min-width="250px" align="center">
+      <el-table-column :label="$t('mytable.studentId')" width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <span>{{ scope.row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.remark')" min-width="250px" align="center">
+      <el-table-column :label="$t('mytable.name')" min-width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.content }}</span>
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.downloads')" width="100px" align="center">
+      <el-table-column :label="$t('mytable.institute')" min-width="200px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.create_time }}</span>
+          <span>{{ scope.row.institute }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('mytable.email')" align="center" min-width="200">
+        <template slot-scope="scope">
+          <span>{{ scope.row.email }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('mytable.role')" width="110px" align="center">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.role | roleTagFilter">{{ scope.row.role | roleFilter }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
@@ -49,6 +62,11 @@
 
     <el-dialog :title="$t('dialog.' + dialogStatus)" :visible.sync="dialogFormVisible" width="550px">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+        <el-form-item :label="$t('mytable.role')" prop="role">
+          <el-select v-model="temp.role" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in roleOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('mytable.username')" prop="username">
           <el-input v-model="temp.username"/>
         </el-form-item>
@@ -75,12 +93,38 @@ import { fetchList, add, update, delete_ } from '@/api/admin'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
+const roleOptions = [
+  // { key: 0, display_name: this.$t('role.admin') },
+  // { key: 1, display_name: this.$t('role.teacher') },
+  // { key: 2, display_name: this.$t('role.ta') }
+  { key: 0, display_name: 'Admin' },
+  { key: 1, display_name: 'Teacher' },
+  { key: 2, display_name: 'TA' }
+]
+
+// arr to obj ,such as { CN : "China", US : "USA" }
+const roleKeyValue = roleOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
 export default {
-  name: 'Courseware',
+  name: 'ComplexTable',
   directives: {
     waves
   },
   filters: {
+    roleTagFilter(role) {
+      const roleMap = {
+        0: 'primary',
+        1: 'success',
+        2: 'info'
+      }
+      return roleMap[role]
+    },
+    roleFilter(role) {
+      return roleKeyValue[role]
+    }
   },
   data() {
     return {
@@ -91,10 +135,14 @@ export default {
       listQuery: {
         page: 1,
         limit: 20,
-        title: undefined,
+        name: undefined,
+        role: undefined,
+        institute: undefined,
         sort: '+id'
       },
+      roleOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      statusOptions: ['published', 'draft', 'deleted'],
       temp: {
         id: undefined,
         username: '',
@@ -104,7 +152,7 @@ export default {
         email: ''
       },
       dialogFormVisible: false,
-      dialogStatus: 'create',
+      dialogStatus: '',
       rules: {
         role: [{ required: true, message: 'role is required', trigger: 'change' }],
         username: [{ required: true, message: 'username is required', trigger: 'blur' }],
@@ -115,13 +163,6 @@ export default {
   },
   created() {
     this.getList()
-    this.$store.watch(
-      (state) => {
-        return this.$store.state.courseId
-      },
-      (nVal, oVal) => {
-        this.getList()
-      })
   },
   methods: {
     // 获取列表

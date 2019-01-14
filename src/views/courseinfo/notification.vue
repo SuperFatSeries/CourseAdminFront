@@ -113,7 +113,6 @@ export default {
         return this.$store.state.courseId
       },
       (nVal, oVal) => {
-        console.log('course id change:', nVal)
         this.getList()
       })
   },

@@ -17,7 +17,13 @@ export default {
     cancelTA: '取消助教',
     title: '标题',
     notificationContent: '内容',
-    createTime: '创建时间'
+    createTime: '创建时间',
+    homeworkName: '作业名',
+    ddl: '截止时间',
+    homeworkCreator: '发起人',
+    homeworkState: '作业提交状态',
+    requirement: '要求',
+    sutdentId: '学号'
   },
   dialog: {
     create: '新建',
@@ -35,9 +41,11 @@ export default {
     Admin: '用户管理',
     admin: '后台用户管理',
     ta: '助教管理',
-    Courseinfo: '课程信息',
+    Courseinfo: '课程内容',
     notification: '通知管理',
     courseware: '课件管理',
+    homework: '作业管理',
+    student: '学生管理',
     introduction: '简述',
     guide: '引导页',
     permission: '权限测试页',

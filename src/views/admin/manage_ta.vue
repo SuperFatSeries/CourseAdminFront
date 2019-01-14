@@ -175,6 +175,13 @@ export default {
   },
   created() {
     this.getList()
+    this.$store.watch(
+      (state) => {
+        return this.$store.state.courseId
+      },
+      (nVal, oVal) => {
+        this.getList()
+      })
   },
   methods: {
     // 获取列表

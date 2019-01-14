@@ -17,7 +17,13 @@ export default {
     cancelTA: 'Cancel TA',
     title: 'Title',
     notificationContent: 'Content',
-    createTime: 'Create Time'
+    createTime: 'Create Time',
+    homeworkName: 'homework name',
+    ddl: 'due',
+    homeworkCreator: 'homework creator',
+    homeworkState: 'homework status',
+    requirement: 'requirement',
+    sutdentId: 'student id'
   },
   dialog: {
     create: 'create',
@@ -38,6 +44,8 @@ export default {
     Courseinfo: 'Course Info',
     notification: 'Notification',
     courseware: 'Courseware',
+    homework: 'homework',
+    student: 'Students',
     introduction: 'Introduction',
     guide: 'Guide',
     permission: 'Permission',

@@ -93,6 +93,12 @@ export const constantRouterMap = [
         component: () => import('@/views/admin/manage_ta'),
         name: 'Manage TA',
         meta: { title: 'ta', noCache: true }
+      },
+      {
+        path: 'student',
+        component: () => import('@/views/admin/student'),
+        name: 'Manage Student',
+        meta: { title: 'student', noCache: true }
       }
     ]
   },
@@ -113,9 +119,15 @@ export const constantRouterMap = [
       },
       {
         path: 'courseware',
-        component: () => import('@/views/courseinfo/notification'),
+        component: () => import('@/views/courseinfo/courseware'),
         name: 'Courseware',
         meta: { title: 'courseware', noCache: true }
+      },
+      {
+        path: 'homework',
+        component: () => import('@/views/courseinfo/homework'),
+        name: 'Homeworl',
+        meta: { title: 'homework', noCache: true }
       }
     ]
   },
