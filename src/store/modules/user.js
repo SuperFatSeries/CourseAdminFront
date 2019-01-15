@@ -47,6 +47,7 @@ const user = {
         loginByUsername(username, userInfo.password).then(response => {
           const data = response.data
           commit('SET_TOKEN', data.token)
+          // console.log('LoginByUsername:' + this.$state.user.token)
           setToken(response.data.token)
           resolve()
         }).catch(error => {
@@ -69,7 +70,7 @@ const user = {
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
-
+          // console.log('GetUserInfo:' + getToken())
           commit('SET_NAME', data.name)
           commit('SET_AVATAR', data.avatar)
           commit('SET_COURSE', data.course)
