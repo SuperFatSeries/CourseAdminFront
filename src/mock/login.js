@@ -8,7 +8,7 @@ const userMap = {
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: 'Super Admin'
   },
-  '18214744': {
+  '14340001': {
     roles: ['admin'],
     token: 'admin',
     course: 1,
@@ -26,10 +26,10 @@ const userMap = {
 
 export default {
   loginByUsername: config => {
-    const { username } = JSON.parse(config.body)
-    // console.log('mock:' + username)
-    if (userMap[username]) {
-      return userMap[username]
+    const { id } = JSON.parse(config.body)
+    // console.log('mock:' + id)
+    if (userMap[id]) {
+      return userMap[id]
     }
     return false
   },

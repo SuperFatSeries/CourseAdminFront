@@ -8,15 +8,15 @@ export function test() {
   })
 }
 
-export function loginByUsername(username, password) {
+export function loginByUsername(id, passwd) {
   const data = {
-    username,
-    password
+    id,
+    passwd
   }
   // console.log(data)
   return request({
-    url: '/admin/login',
-    method: 'put',
+    url: '/login',
+    method: 'post',
     data
   })
 }

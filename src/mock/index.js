@@ -11,7 +11,7 @@ import transactionAPI from './transaction'
 // })
 
 // 登录相关
-Mock.mock(/\/admin\/login/, 'put', loginAPI.loginByUsername)
+Mock.mock(/\/login/, 'post', loginAPI.loginByUsername)
 Mock.mock(/\/admin\/logout/, 'post', loginAPI.logout)
 Mock.mock(/\/admin\/info\.*/, 'get', loginAPI.getUserInfo)
 
