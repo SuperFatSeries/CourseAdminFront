@@ -19,9 +19,9 @@
       highlight-current-row
       style="width: 100%;">
       <el-table-column :label="$t('mytable.id')" align="center" width="65" type="index"/>
-      <el-table-column :label="$t('mytable.username')" width="150px" align="center">
+      <el-table-column :label="$t('mytable.username')" min-width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.username }}</span>
+          <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.name')" min-width="150px" align="center">
@@ -31,7 +31,7 @@
       </el-table-column>
       <el-table-column :label="$t('mytable.institute')" min-width="200px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.institute }}</span>
+          <span>{{ scope.row.institute.name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.email')" align="center" min-width="200">
@@ -41,7 +41,7 @@
       </el-table-column>
       <el-table-column :label="$t('mytable.role')" width="110px" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.role | roleTagFilter">{{ scope.row.role | roleFilter }}</el-tag>
+          <el-tag :type="scope.row.salt | roleTagFilter">{{ scope.row.salt | roleFilter }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
@@ -64,13 +64,13 @@
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('mytable.username')" prop="username">
-          <el-input v-model="temp.username"/>
+          <el-input v-model="temp.id"/>
         </el-form-item>
         <el-form-item :label="$t('mytable.name')" prop="name">
           <el-input v-model="temp.name"/>
         </el-form-item>
         <el-form-item :label="$t('mytable.institute')" prop="institute">
-          <el-input v-model="temp.institute"/>
+          <el-input v-model="temp.institute.name"/>
         </el-form-item>
         <el-form-item :label="$t('mytable.email')" prop="email">
           <el-input v-model="temp.email"/>
@@ -93,9 +93,9 @@ const roleOptions = [
   // { key: 0, display_name: this.$t('role.admin') },
   // { key: 1, display_name: this.$t('role.teacher') },
   // { key: 2, display_name: this.$t('role.ta') }
-  { key: 0, display_name: 'Admin' },
-  { key: 1, display_name: 'Teacher' },
-  { key: 2, display_name: 'TA' }
+  { key: 'admin', display_name: 'Admin' },
+  { key: 'teacher', display_name: 'Teacher' },
+  { key: 'ta', display_name: 'TA' }
 ]
 
 // arr to obj ,such as { CN : "China", US : "USA" }
@@ -112,9 +112,9 @@ export default {
   filters: {
     roleTagFilter(role) {
       const roleMap = {
-        0: 'primary',
-        1: 'success',
-        2: 'info'
+        'admin': 'primary',
+        'teacher': 'success',
+        'ta': 'info'
       }
       return roleMap[role]
     },
@@ -141,8 +141,7 @@ export default {
       statusOptions: ['published', 'draft', 'deleted'],
       temp: {
         id: undefined,
-        username: '',
-        role: '',
+        salt: '',
         name: '',
         institute: '',
         email: ''
@@ -165,12 +164,9 @@ export default {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-        // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        this.list = response.data.data.content
+        this.total = response.data.data.totalElements
+        this.listLoading = false
       })
     },
     // 过滤
@@ -192,7 +188,7 @@ export default {
       this.temp = {
         id: undefined,
         username: '',
-        role: '',
+        salt: '',
         name: '',
         institute: '',
         email: ''

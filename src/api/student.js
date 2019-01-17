@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function fetchList(query) {
   return request({
-    url: '/admin',
+    url: '/student',
     method: 'get'
     // params: query
   })
@@ -10,7 +10,7 @@ export function fetchList(query) {
 
 export function fetch(id) {
   return request({
-    url: '/admin/',
+    url: '/student',
     method: 'get',
     params: { id }
   })
@@ -18,26 +18,25 @@ export function fetch(id) {
 
 export function add(data) {
   return request({
-    url: '/admin/',
-    method: 'post',
+    url: '/student',
+    method: 'put',
     data
   })
 }
 
 export function update(id, data) {
   return request({
-    url: '/admin/',
-    method: 'put',
-    params: { id },
+    url: '/student/' + id,
+    method: 'post',
+    // params: { id },
     data
   })
 }
 
 export function delete_(id) {
-  console.log('deleteAdmin:' + id)
   return request({
-    url: '/admin/',
-    method: 'delete',
-    params: { id }
+    url: '/student/' + id,
+    method: 'delete'
+    // params: { id }
   })
 }

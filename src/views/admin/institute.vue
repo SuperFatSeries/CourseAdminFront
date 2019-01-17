@@ -16,19 +16,14 @@
       highlight-current-row
       style="width: 100%;">
       <el-table-column :label="$t('mytable.id')" align="center" width="65" type="index"/>
-      <el-table-column :label="$t('mytable.studentId')" min-width="200px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('mytable.name')" min-width="150px" align="center">
+      <el-table-column :label="$t('mytable.instituteName')" min-width="550px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.institute')" min-width="200px" align="center">
+      <el-table-column :label="$t('mytable.createTime')" min-width="150px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.institute.name }}</span>
+          <span>{{ scope.row.created_time | timestampFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
@@ -45,16 +40,8 @@
 
     <el-dialog :title="$t('dialog.' + dialogStatus)" :visible.sync="dialogFormVisible" width="550px">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('mytable.studentId')" prop="id">
-          <el-input v-model="temp.id"/>
-        </el-form-item>
-        <el-form-item :label="$t('mytable.name')" prop="name">
+        <el-form-item :label="$t('mytable.instituteName')" prop="name">
           <el-input v-model="temp.name"/>
-        </el-form-item>
-        <el-form-item :label="$t('mytable.institute')" prop="institute">
-          <el-select v-model="temp.institute" :placeholder="$t('mytable.role')" clearable style="width: 90px" class="filter-item">
-            <el-option v-for="item in institute" :key="item.id" :label="item.name" :value="item.id"/>
-          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -66,21 +53,24 @@
 </template>
 
 <script>
-import { fetchList, add, update, delete_ } from '@/api/student'
-import { get } from '@/api/institute'
+import { get, add, update, delete_ } from '@/api/institute'
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime } from '@/utils'
+import { parseTime, formatDate } from '@/utils'
 
 export default {
-  name: 'Student',
+  name: 'Institute',
   directives: {
     waves
+  },
+  filters: {
+    timestampFilter(timestamp) {
+      return formatDate(timestamp)
+    }
   },
   data() {
     return {
       tableKey: 10,
       list: null,
-      institute: null,
       total: null,
       listLoading: true,
       listQuery: {
@@ -94,8 +84,7 @@ export default {
       statusOptions: ['published', 'draft', 'deleted'],
       temp: {
         id: undefined,
-        name: '',
-        institute: ''
+        name: ''
       },
       dialogFormVisible: false,
       dialogStatus: 'create',
@@ -108,22 +97,15 @@ export default {
   },
   created() {
     this.getList()
-    this.getInstitute()
   },
   methods: {
     // 获取列表
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      get(this.listQuery).then(response => {
         this.list = response.data.data.content
         this.total = response.data.data.totalElements
         this.listLoading = false
-      })
-    },
-    // 获取学院
-    getInstitute() {
-      get(this.listQuery).then(response => {
-        this.institute = response.data.data.content
       })
     },
     // 过滤
@@ -144,8 +126,7 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        name: '',
-        institute: ''
+        name: ''
       }
     },
     // 打开新增模态框
@@ -178,7 +159,6 @@ export default {
     // 打开编辑模态框
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.institute = this.temp.institute.id
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {

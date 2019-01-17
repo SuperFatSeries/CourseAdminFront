@@ -16,7 +16,7 @@
       highlight-current-row
       style="width: 100%;">
       <el-table-column :label="$t('mytable.id')" align="center" width="65" type="index"/>
-      <el-table-column :label="$t('mytable.studentId')" min-width="200px" align="center">
+      <el-table-column :label="$t('mytable.studentId')" width="200px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
@@ -28,7 +28,7 @@
       </el-table-column>
       <el-table-column :label="$t('mytable.institute')" min-width="200px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.institute.name }}</span>
+          <span>{{ scope.row.institute }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
@@ -44,35 +44,52 @@
     </div>
 
     <el-dialog :title="$t('dialog.' + dialogStatus)" :visible.sync="dialogFormVisible" width="550px">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('mytable.studentId')" prop="id">
-          <el-input v-model="temp.id"/>
-        </el-form-item>
-        <el-form-item :label="$t('mytable.name')" prop="name">
-          <el-input v-model="temp.name"/>
-        </el-form-item>
-        <el-form-item :label="$t('mytable.institute')" prop="institute">
-          <el-select v-model="temp.institute" :placeholder="$t('mytable.role')" clearable style="width: 90px" class="filter-item">
-            <el-option v-for="item in institute" :key="item.id" :label="item.name" :value="item.id"/>
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <el-table
+        v-loading="listLoading"
+        :key="tableKey"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;">
+        <el-table-column :label="$t('mytable.id')" align="center" width="65" type="index"/>
+        <el-table-column :label="$t('mytable.studentId')" width="200px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('mytable.name')" min-width="150px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('mytable.institute')" min-width="200px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.institute }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('mytable.edit') }}</el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(scope.row)">{{ $t('mytable.delete') }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="createData()">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList, add, update, delete_ } from '@/api/student'
-import { get } from '@/api/institute'
+import { fetchList, add } from '@/api/admin'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
 export default {
-  name: 'Student',
+  name: 'CourseStudent',
   directives: {
     waves
   },
@@ -80,7 +97,7 @@ export default {
     return {
       tableKey: 10,
       list: null,
-      institute: null,
+      all_student: null,
       total: null,
       listLoading: true,
       listQuery: {
@@ -98,7 +115,7 @@ export default {
         institute: ''
       },
       dialogFormVisible: false,
-      dialogStatus: 'create',
+      dialogStatus: '',
       rules: {
         id: [{ required: true, message: 'student id is required', trigger: 'change' }],
         name: [{ required: true, message: 'name is required', trigger: 'blur' }]
@@ -108,22 +125,18 @@ export default {
   },
   created() {
     this.getList()
-    this.getInstitute()
   },
   methods: {
     // 获取列表
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.data.content
-        this.total = response.data.data.totalElements
-        this.listLoading = false
-      })
-    },
-    // 获取学院
-    getInstitute() {
-      get(this.listQuery).then(response => {
-        this.institute = response.data.data.content
+        this.list = response.data.items
+        this.total = response.data.total
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
       })
     },
     // 过滤
@@ -173,55 +186,6 @@ export default {
             })
           })
         }
-      })
-    },
-    // 打开编辑模态框
-    handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.institute = this.temp.institute.id
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    // 确认编辑数据
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          update(tempData.id, tempData).then(() => {
-            // 替代数据
-            for (const v of this.list) {
-              if (v.id === this.temp.id) {
-                const index = this.list.indexOf(v)
-                this.list.splice(index, 1, this.temp)
-                break
-              }
-            }
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-    handleDelete(row) {
-      this.$confirm('确认删除？').then(_ => {
-        delete_(row.id).then(() => {
-          this.$notify({
-            title: '成功',
-            message: '删除成功',
-            type: 'success',
-            duration: 2000
-          })
-          const index = this.list.indexOf(row)
-          this.list.splice(index, 1)
-        })
       })
     },
     handleDownload() {

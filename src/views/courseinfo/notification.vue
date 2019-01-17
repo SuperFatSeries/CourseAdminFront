@@ -28,9 +28,9 @@
           <span>{{ scope.row.content }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.createTime')" min-width="200px" align="center">
+      <el-table-column :label="$t('mytable.createdTime')" width="250px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.create_time }}</span>
+          <span>{{ scope.row.created_time | timestampFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
@@ -63,14 +63,19 @@
 </template>
 
 <script>
-import { fetchList, add, update, delete_ } from '@/api/admin'
+import { fetchList, add, update, delete_ } from '@/api/notification'
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime } from '@/utils'
+import { parseTime, formatDate } from '@/utils'
 
 export default {
   name: 'Notification',
   directives: {
     waves
+  },
+  filters: {
+    timestampFilter(timestamp) {
+      return formatDate(timestamp)
+    }
   },
   data() {
     return {
@@ -95,9 +100,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: 'create',
       rules: {
-        role: [{ required: true, message: 'role is required', trigger: 'change' }],
-        username: [{ required: true, message: 'username is required', trigger: 'blur' }],
-        name: [{ required: true, message: 'name is required', trigger: 'blur' }]
+        title: [{ required: true, message: 'title is required', trigger: 'blur' }],
+        content: [{ required: true, message: 'content is required', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -116,13 +120,14 @@ export default {
     // 获取列表
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchList(this.$store.state.courseId, this.listQuery).then(response => {
+        this.list = response.data.data.content
+        this.total = response.data.data.totalElements
+        this.listLoading = false
         // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        // setTimeout(() => {
+        //   this.listLoading = false
+        // }, 1.5 * 1000)
       })
     },
     // 过滤
@@ -143,11 +148,8 @@ export default {
     resetTemp() {
       this.temp = {
         id: undefined,
-        username: '',
-        role: '',
-        name: '',
-        institute: '',
-        email: ''
+        title: '',
+        content: ''
       }
     },
     // 打开新增模态框
@@ -164,8 +166,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          add(this.temp).then(() => {
+          add(this.$store.state.courseId, this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -192,10 +193,10 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          update(tempData.username, tempData).then(() => {
+          update(this.$store.state.courseId, tempData.id, tempData).then(() => {
             // 替代数据
             for (const v of this.list) {
-              if (v.username === this.temp.username) {
+              if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)
                 this.list.splice(index, 1, this.temp)
                 break
@@ -214,7 +215,7 @@ export default {
     },
     handleDelete(row) {
       this.$confirm('确认删除？').then(_ => {
-        delete_(row.username).then(() => {
+        delete_(this.$store.state.courseId, row.id).then(() => {
           this.$notify({
             title: '成功',
             message: '删除成功',

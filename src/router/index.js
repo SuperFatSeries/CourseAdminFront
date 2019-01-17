@@ -89,6 +89,12 @@ export const constantRouterMap = [
         meta: { title: 'admin', noCache: true }
       },
       {
+        path: 'institute',
+        component: () => import('@/views/admin/institute'),
+        name: 'Manage Institute',
+        meta: { title: 'institute', noCache: true }
+      },
+      {
         path: 'test',
         component: () => import('@/views/admin/manage_ta'),
         name: 'Manage TA',

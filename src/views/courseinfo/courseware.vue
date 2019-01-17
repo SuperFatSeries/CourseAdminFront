@@ -18,17 +18,22 @@
       <el-table-column :label="$t('mytable.id')" align="center" width="65" type="index"/>
       <el-table-column :label="$t('mytable.coursewareName')" min-width="250px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <a href="javascript:void(0);" class="link-type" @click="handleDownloadFile(scope.row.id)">{{ scope.row.file_name }}</a>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.remark')" min-width="250px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.content }}</span>
+          <span>{{ scope.row.remark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('mytable.createdTime')" width="250px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.created_time | timestampFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.downloads')" width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.create_time }}</span>
+          <span>{{ scope.row.downloads }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
@@ -67,9 +72,9 @@
 </template>
 
 <script>
-import { fetchList, add, update, delete_ } from '@/api/admin'
+import { fetchList, add, update, delete_, download } from '@/api/courseware'
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime } from '@/utils'
+import { parseTime, formatDate } from '@/utils'
 
 export default {
   name: 'Courseware',
@@ -77,6 +82,9 @@ export default {
     waves
   },
   filters: {
+    timestampFilter(timestamp) {
+      return formatDate(timestamp)
+    }
   },
   data() {
     return {
@@ -123,13 +131,14 @@ export default {
     // 获取列表
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchList(this.$store.state.courseId, this.listQuery).then(response => {
+        this.list = response.data.data.content
+        this.total = response.data.data.totalElements
+        this.listLoading = false
         // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        // setTimeout(() => {
+        //   this.listLoading = false
+        // }, 1.5 * 1000)
       })
     },
     // 过滤
@@ -156,6 +165,10 @@ export default {
         institute: '',
         email: ''
       }
+    },
+    // 下载文件
+    handleDownloadFile(id) {
+      window.open(download(this.$store.state.courseId, id), '_blank')
     },
     // 打开新增模态框
     handleCreate() {

@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-// import md5 from 'js-md5'
 
 export function test() {
   return request({
@@ -31,8 +30,8 @@ export function logout() {
 export function getUserInfo(token) {
   return request({
     url: '/admin/info',
-    method: 'get',
-    params: { token }
+    method: 'get'
+    // params: { token }
   })
 }
 

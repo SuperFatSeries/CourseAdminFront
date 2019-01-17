@@ -21,9 +21,12 @@ export default {
     homeworkName: '作业名',
     ddl: '截止时间',
     homeworkCreator: '发起人',
-    homeworkState: '作业提交状态',
+    homeworkSubmit: '提交次数',
     requirement: '要求',
-    sutdentId: '学号'
+    studentId: '学号',
+    createdTime: '创建时间',
+    download: '下载',
+    instituteName: '学院名'
   },
   dialog: {
     create: '新建',
@@ -46,6 +49,7 @@ export default {
     courseware: '课件管理',
     homework: '作业管理',
     student: '学生管理',
+    institute: '学院管理',
     introduction: '简述',
     guide: '引导页',
     permission: '权限测试页',

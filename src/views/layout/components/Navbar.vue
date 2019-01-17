@@ -99,7 +99,10 @@ export default {
   created() {
     getCourseList().then(response => {
       // console.log(response.data)
-      this.courseList = response.data
+      this.courseList = response.data.data.content
+      this.tempCourse.key = this.courseList[0].id
+      this.tempCourse.name = this.courseList[0].name
+      this.$store.dispatch('test', this.tempCourse.key).then(() => {})
     }).catch((error) => {
       console.log(error)
     })
@@ -115,7 +118,7 @@ export default {
     },
     changeCourse(courseItem) {
       // console.log('temp course:', this.$store.state.user.course)
-      this.$store.dispatch('test', courseItem.key).then(() => {
+      this.$store.dispatch('test', courseItem.id).then(() => {
         this.tempCourse = courseItem
         Message.success(this.$t('notify.changeCourse') + courseItem.name)
         // console.log('changed course:', this.$store.state.user.course)

@@ -1,5 +1,6 @@
-import { loginByUsername, logout, getUserInfo } from '@/api/login'
+import { loginByUsername, getUserInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import md5 from 'js-md5'
 
 const user = {
   state: {
@@ -44,12 +45,17 @@ const user = {
     LoginByUsername({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
-        loginByUsername(username, userInfo.password).then(response => {
+        loginByUsername(username, md5(userInfo.password)).then(response => {
           const data = response.data
-          commit('SET_TOKEN', data.token)
-          // console.log('LoginByUsername:' + this.$state.user.token)
-          setToken(response.data.token)
-          resolve()
+          // console.log(data)
+          if (data.code === 0) {
+            commit('SET_TOKEN', data.data.token)
+            // console.log('LoginByUsername:' + this.$state.user.token)
+            setToken(data.data.token)
+            resolve()
+          } else {
+            reject(data.msg)
+          }
         }).catch(error => {
           reject(error)
         })
@@ -60,21 +66,20 @@ const user = {
     GetUserInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getUserInfo(state.token).then(response => {
-          if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
-            reject('error')
-          }
           const data = response.data
-
-          if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', data.roles)
-          } else {
-            reject('getInfo: roles must be a non-null array !')
+          if (data.code !== 0) {
+            reject('Verification failed, please login again.')
           }
-          // console.log('GetUserInfo:' + getToken())
+
+          if (data.data.authorities && data.data.authorities.length > 0) { // 验证返回的roles是否是一个非空数组
+            commit('SET_ROLES', data.data.authorities)
+          } else {
+            reject('getInfo: roles must be a non-null array!')
+          }
+
           commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
-          commit('SET_COURSE', data.course)
-          resolve(response)
+          commit('SET_AVATAR', 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif')
+          resolve(data)
         }).catch(error => {
           reject(error)
         })
@@ -98,14 +103,10 @@ const user = {
     // 登出
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
-        logout(state.token).then(() => {
-          commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
-          removeToken()
-          resolve()
-        }).catch(error => {
-          reject(error)
-        })
+        commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
+        removeToken()
+        resolve()
       })
     },
 

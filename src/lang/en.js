@@ -20,10 +20,13 @@ export default {
     createTime: 'Create Time',
     homeworkName: 'homework name',
     ddl: 'due',
-    homeworkCreator: 'homework creator',
-    homeworkState: 'homework status',
+    homeworkCreator: 'creator',
+    homeworkSubmit: 'submit times',
     requirement: 'requirement',
-    sutdentId: 'student id'
+    studentId: 'student id',
+    createdTime: 'create time',
+    download: 'download',
+    instituteName: 'institute name'
   },
   dialog: {
     create: 'create',
@@ -44,8 +47,9 @@ export default {
     Courseinfo: 'Course Info',
     notification: 'Notification',
     courseware: 'Courseware',
-    homework: 'homework',
+    homework: 'Homework',
     student: 'Students',
+    institute: 'Institute',
     introduction: 'Introduction',
     guide: 'Guide',
     permission: 'Permission',

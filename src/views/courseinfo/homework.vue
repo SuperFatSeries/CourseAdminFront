@@ -19,22 +19,27 @@
       <el-table-column :label="$t('mytable.id')" align="center" width="65" type="index"/>
       <el-table-column :label="$t('mytable.homeworkName')" min-width="250px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.ddl')" min-width="250px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.content }}</span>
+          <span>{{ scope.row.ddl | timestampFilter }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('mytable.homeworkSubmit')" min-width="100px" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.commit_count }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.homeworkCreator')" min-width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.create_time }}</span>
+          <span>{{ scope.row.teacher_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.homeworkState')" min-width="100px" align="center">
+      <el-table-column :label="$t('mytable.createTime')" min-width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.create_time }}</span>
+          <span>{{ scope.row.create_time | timestampFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
@@ -70,6 +75,7 @@
         <div class="editor-container">
           <Tinymce ref="editor" :height="250" v-model="temp.requirement" />
         </div>
+        <div class="editor-content" v-html="temp.requirement"/>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
@@ -80,10 +86,10 @@
 </template>
 
 <script>
-import { fetchList, add, update, delete_ } from '@/api/admin'
+import { fetchList, add, update, delete_ } from '@/api/homework'
 import Tinymce from '@/components/Tinymce'
 import waves from '@/directive/waves' // 水波纹指令
-import { parseTime } from '@/utils'
+import { parseTime, formatDate } from '@/utils'
 
 export default {
   name: 'Homework',
@@ -92,6 +98,9 @@ export default {
     waves
   },
   filters: {
+    timestampFilter(timestamp) {
+      return formatDate(timestamp)
+    }
   },
   data() {
     return {
@@ -136,13 +145,14 @@ export default {
     // 获取列表
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+      fetchList(this.$store.state.courseId, this.listQuery).then(response => {
+        this.list = response.data.data.content
+        this.total = response.data.data.totalElements
+        this.listLoading = false
         // Just to simulate the time of the request
-        setTimeout(() => {
-          this.listLoading = false
-        }, 1.5 * 1000)
+        // setTimeout(() => {
+        //   this.listLoading = false
+        // }, 1.5 * 1000)
       })
     },
     // 过滤
@@ -183,7 +193,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          add(this.temp).then(() => {
+          add(this.$store.state.courseId, this.temp).then(() => {
             this.list.unshift(this.temp)
             this.dialogFormVisible = false
             this.$notify({
@@ -210,7 +220,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          update(tempData.username, tempData).then(() => {
+          update(this.$store.state.courseId, tempData.id, tempData).then(() => {
             // 替代数据
             for (const v of this.list) {
               if (v.username === this.temp.username) {
@@ -232,7 +242,7 @@ export default {
     },
     handleDelete(row) {
       this.$confirm('确认删除？').then(_ => {
-        delete_(row.username).then(() => {
+        delete_(this.$store.state.courseId, row.id).then(() => {
           this.$notify({
             title: '成功',
             message: '删除成功',
@@ -274,7 +284,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import "src/styles/mixin.scss";
 .editor-container {
-  min-height: 500px;
+  min-height: 300px;
   margin: 0 0 30px;
   .editor-upload-btn-container {
     text-align: right;
@@ -283,5 +293,10 @@ export default {
       display: inline-block;
     }
   }
+}
+.editor-content{
+  margin-top: 20px;
+  max-height: 200px;
+  overflow-y: scroll;
 }
 </style>
