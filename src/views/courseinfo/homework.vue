@@ -22,12 +22,12 @@
           <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.ddl')" min-width="250px" align="center">
+      <el-table-column :label="$t('mytable.ddl')" min-width="120px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.ddl | timestampFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.homeworkSubmit')" min-width="100px" align="center">
+      <el-table-column :label="$t('mytable.homeworkSubmit')" width="90px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.commit_count }}</span>
         </template>
@@ -39,12 +39,13 @@
       </el-table-column>
       <el-table-column :label="$t('mytable.createTime')" min-width="100px" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.create_time | timestampFilter }}</span>
+          <span>{{ scope.row.createdTime | timestampFilter }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('mytable.actions')" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">{{ $t('mytable.edit') }}</el-button>
+          <el-button type="primary" size="mini" @click="handleSubmit(scope.row)">{{ $t('mytable.checkSubmit') }}</el-button>
           <el-button type="danger" size="mini" @click="handleDelete(scope.row)">{{ $t('mytable.delete') }}</el-button>
         </template>
       </el-table-column>
@@ -55,50 +56,73 @@
     </div>
 
     <el-dialog :title="$t('dialog.' + dialogStatus)" :visible.sync="dialogFormVisible" width="950px">
+      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 800px; margin-left:50px;">
+        <el-row>
+          <el-col :span="10">
+            <el-form-item :label="$t('mytable.homeworkName')" prop="name">
+              <el-input v-model="temp.name"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label="$t('mytable.ddl')" prop="ddl" style="margin-left: 20px">
+              <el-date-picker v-model="temp.ddl" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择截止时间"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <br>
+        <el-row>
+          <label class="el-form-item__label" style="width: 100px;">作业要求</label>
+        </el-row>
+        <div class="editor-container">
+          <Tinymce ref="editor" :height="250" v-model="temp.requirement" />
+        </div>
+        <div class="editor-content" v-html="temp.requirement"/>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :title="$t('dialog.' + dialogStatus)" :visible.sync="submitFormVisible" width="1100px">
       <el-table
         v-loading="listLoading"
-        :key="tableKey"
-        :data="list"
+        :key="submitTableKey"
+        :data="homeworkSubmitList"
         border
         fit
         highlight-current-row
         style="width: 100%;">
         <el-table-column :label="$t('mytable.id')" align="center" width="65" type="index"/>
-        <el-table-column :label="$t('mytable.homeworkName')" min-width="250px" align="center">
+        <el-table-column :label="$t('mytable.studentId')" width="100px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
+            <span>{{ scope.row.student_id }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('mytable.ddl')" min-width="250px" align="center">
+        <el-table-column :label="$t('mytable.name')" width="150px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.ddl | timestampFilter }}</span>
+            <span>{{ scope.row.student_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('mytable.homeworkSubmit')" min-width="100px" align="center">
+        <el-table-column :label="$t('mytable.fileName')" min-width="100px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.commit_count }}</span>
+            <span>{{ scope.row.file_name }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('mytable.homeworkCreator')" min-width="100px" align="center">
+        <el-table-column :label="$t('mytable.remark')" min-width="100px" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.teacher_name }}</span>
+            <span>{{ scope.row.remark }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('mytable.createTime')" min-width="100px" align="center">
+        <el-table-column :label="$t('mytable.actions')" align="center" width="200" class-name="small-padding fixed-width">
           <template slot-scope="scope">
-            <span>{{ scope.row.create_time | timestampFilter }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('mytable.actions')" align="center" width="230" class-name="small-padding fixed-width">
-          <template slot-scope="scope">
-            <el-button type="primary" size="mini" @click="downloadSubmit(scope.row)">{{ $t('mytable.edit') }}</el-button>
+            <el-button type="primary" size="mini" @click="downloadSubmit(scope.row.id)">{{ $t('mytable.download') }}</el-button>
             <el-button type="danger" size="mini" @click="handleDeleteSubmit(scope.row)">{{ $t('mytable.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button>
+        <el-button @click="submitFormVisible = false">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -106,6 +130,7 @@
 
 <script>
 import { fetchList, add, update, delete_ } from '@/api/homework'
+import { fetchSubmit, deleteSubmit, download } from '@/api/homework_submit'
 import Tinymce from '@/components/Tinymce'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime, formatDate } from '@/utils'
@@ -124,8 +149,10 @@ export default {
   data() {
     return {
       tableKey: 10,
+      submitTableKey: 11,
       list: null,
-      homework_submit: null,
+      homeworkSubmitList: null,
+      homeworkId: -1,
       total: null,
       listLoading: true,
       listQuery: {
@@ -142,6 +169,7 @@ export default {
         ddl: '',
         requirement: ''
       },
+      submitFormVisible: false,
       dialogFormVisible: false,
       dialogStatus: 'create',
       rules: {
@@ -167,12 +195,9 @@ export default {
       this.listLoading = true
       fetchList(this.$store.state.courseId, this.listQuery).then(response => {
         this.list = response.data.data.content
+        console.log(this.list[0].createdTime)
         this.total = response.data.data.totalElements
         this.listLoading = false
-        // Just to simulate the time of the request
-        // setTimeout(() => {
-        //   this.listLoading = false
-        // }, 1.5 * 1000)
       })
     },
     // 过滤
@@ -260,6 +285,36 @@ export default {
         }
       })
     },
+    // 打开作业提交模态框
+    handleSubmit(row) {
+      const id = row.id
+      this.submitFormVisible = true
+      this.homeworkId = id
+      fetchSubmit(this.$store.state.courseId, id).then(response => {
+        this.homeworkSubmitList = response.data.data.content
+        this.listLoading = false
+        console.log(this.homeworkSubmitList[0].student_name)
+      })
+    },
+    // 下载一次作业提交
+    downloadSubmit(submitId) {
+      window.open(download(this.$store.state.courseId, this.homeworkId, submitId), '_blank')
+    },
+    // 删除一个作业提交
+    handleDeleteSubmit(row) {
+      this.$confirm('确认删除？').then(_ => {
+        deleteSubmit(this.$store.state.courseId, this.homeworkId, row.id).then(() => {
+          this.$notify({
+            title: '成功',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+          const index = this.list.indexOf(row)
+          this.homeworkSubmitList.splice(index, 1)
+        })
+      })
+    },
     handleDelete(row) {
       this.$confirm('确认删除？').then(_ => {
         delete_(this.$store.state.courseId, row.id).then(() => {
@@ -318,5 +373,8 @@ export default {
   margin-top: 20px;
   max-height: 200px;
   overflow-y: scroll;
+}
+body .el-table th.gutter{
+    display: table-cell!important;
 }
 </style>
