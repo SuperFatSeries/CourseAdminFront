@@ -6,10 +6,6 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/views/layout/Layout'
 
-/* Router Modules */
-import componentsRouter from './modules/components'
-import tableRouter from './modules/table'
-
 /** note: Submenu only appear when children.length>=1
  *  detail see  https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
  **/
@@ -74,41 +70,6 @@ export const constantRouterMap = [
     ]
   },
   {
-    path: '/admin',
-    component: Layout,
-    redirect: '/admin/index',
-    meta: {
-      title: 'Admin',
-      icon: 'user'
-    },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/admin/manage_admin'),
-        name: 'Manage Admin',
-        meta: { title: 'admin', noCache: true }
-      },
-      {
-        path: 'institute',
-        component: () => import('@/views/admin/institute'),
-        name: 'Manage Institute',
-        meta: { title: 'institute', noCache: true }
-      },
-      {
-        path: 'test',
-        component: () => import('@/views/admin/manage_ta'),
-        name: 'Manage TA',
-        meta: { title: 'ta', noCache: true }
-      },
-      {
-        path: 'student',
-        component: () => import('@/views/admin/student'),
-        name: 'Manage Student',
-        meta: { title: 'student', noCache: true }
-      }
-    ]
-  },
-  {
     path: '/courseinfo',
     component: Layout,
     redirect: '/courseinfo/notification',
@@ -134,19 +95,12 @@ export const constantRouterMap = [
         component: () => import('@/views/courseinfo/homework'),
         name: 'Homeworl',
         meta: { title: 'homework', noCache: true }
-      }
-    ]
-  },
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
+      },
       {
-        path: 'index',
-        component: () => import('@/views/guide/index'),
-        name: 'Guide',
-        meta: { title: 'guide', icon: 'guide', noCache: true }
+        path: 'test',
+        component: () => import('@/views/courseinfo/manage_ta'),
+        name: 'Manage TA',
+        meta: { title: 'ta', noCache: true }
       }
     ]
   }
@@ -160,113 +114,32 @@ export default new Router({
 
 export const asyncRouterMap = [
   {
-    path: '/permission',
+    path: '/admin',
     component: Layout,
-    redirect: '/permission/index',
-    alwaysShow: true, // will always show the root menu
+    redirect: '/admin/index',
     meta: {
-      title: 'permission',
-      icon: 'lock',
-      roles: ['admin', 'editor'] // you can set roles in root nav
+      title: 'Admin',
+      icon: 'user',
+      roles: ['admin', 'teacher', 'ta']
     },
-    children: [
-      {
-        path: 'page',
-        component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
-        meta: {
-          title: 'pagePermission',
-          roles: ['admin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: 'directive',
-        component: () => import('@/views/permission/directive'),
-        name: 'DirectivePermission',
-        meta: {
-          title: 'directivePermission'
-          // if do not set roles, means: this page does not require permission
-        }
-      }
-    ]
-  },
-
-  {
-    path: '/icon',
-    component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/svg-icons/index'),
-        name: 'Icons',
-        meta: { title: 'icons', icon: 'icon', noCache: true }
-      }
-    ]
-  },
-
-  /** When your routing table is too long, you can split it into small modules**/
-  componentsRouter,
-  tableRouter,
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/list',
-    name: 'Example',
-    meta: {
-      title: 'example',
-      icon: 'example'
-    },
-    children: [
-      {
-        path: 'create',
-        component: () => import('@/views/example/create'),
-        name: 'CreateArticle',
-        meta: { title: 'createArticle', icon: 'edit' }
+        component: () => import('@/views/admin/manage_admin'),
+        name: 'Manage Admin',
+        meta: { title: 'admin', roles: ['admin'], noCache: true }
       },
       {
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/example/edit'),
-        name: 'EditArticle',
-        meta: { title: 'editArticle', noCache: true },
-        hidden: true
+        path: 'institute',
+        component: () => import('@/views/admin/institute'),
+        name: 'Manage Institute',
+        meta: { title: 'institute', roles: ['admin'], noCache: true }
       },
       {
-        path: 'list',
-        component: () => import('@/views/example/list'),
-        name: 'ArticleList',
-        meta: { title: 'articleList', icon: 'list' }
-      }
-    ]
-  },
-
-  {
-    path: '/excel',
-    component: Layout,
-    redirect: '/excel/export-excel',
-    name: 'Excel',
-    meta: {
-      title: 'excel',
-      icon: 'excel'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: () => import('@/views/excel/exportExcel'),
-        name: 'ExportExcel',
-        meta: { title: 'exportExcel' }
-      },
-      {
-        path: 'export-selected-excel',
-        component: () => import('@/views/excel/selectExcel'),
-        name: 'SelectExcel',
-        meta: { title: 'selectExcel' }
-      },
-      {
-        path: 'upload-excel',
-        component: () => import('@/views/excel/uploadExcel'),
-        name: 'UploadExcel',
-        meta: { title: 'uploadExcel' }
+        path: 'student',
+        component: () => import('@/views/admin/student'),
+        name: 'Manage Student',
+        meta: { title: 'student', noCache: true }
       }
     ]
   },
