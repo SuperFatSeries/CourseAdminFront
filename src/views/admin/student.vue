@@ -52,7 +52,7 @@
           <el-input v-model="temp.name"/>
         </el-form-item>
         <el-form-item :label="$t('mytable.institute')" prop="institute">
-          <el-select v-model="temp.institute" :placeholder="$t('mytable.role')" clearable style="width: 90px" class="filter-item">
+          <el-select v-model="temp.institute.id" :placeholder="$t('mytable.institute')" clearable style="width: 100%" class="filter-item">
             <el-option v-for="item in institute" :key="item.id" :label="item.name" :value="item.id"/>
           </el-select>
         </el-form-item>
@@ -178,7 +178,7 @@ export default {
     // 打开编辑模态框
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
-      this.temp.institute = this.temp.institute.id
+      // this.temp.institute = this.temp.institute.id
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -192,6 +192,11 @@ export default {
           const tempData = Object.assign({}, this.temp)
           update(tempData.id, tempData).then(() => {
             // 替代数据
+            for (const v of this.institute) {
+              if (v.id === this.temp.institute.id) {
+                this.temp.institute = v
+              }
+            }
             for (const v of this.list) {
               if (v.id === this.temp.id) {
                 const index = this.list.indexOf(v)

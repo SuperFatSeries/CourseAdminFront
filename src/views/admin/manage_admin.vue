@@ -59,7 +59,7 @@
     <el-dialog :title="$t('dialog.' + dialogStatus)" :visible.sync="dialogFormVisible" width="550px">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('mytable.role')" prop="role">
-          <el-select v-model="temp.role" class="filter-item" placeholder="Please select">
+          <el-select v-model="temp.salt" class="filter-item" placeholder="Please select">
             <el-option v-for="item in roleOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
@@ -70,7 +70,9 @@
           <el-input v-model="temp.name"/>
         </el-form-item>
         <el-form-item :label="$t('mytable.institute')" prop="institute">
-          <el-input v-model="temp.institute.name"/>
+          <el-select v-model="temp.institute.id" :placeholder="$t('mytable.institute')" clearable style="width: 100%" class="filter-item">
+            <el-option v-for="item in institute" :key="item.id" :label="item.name" :value="item.id"/>
+          </el-select>
         </el-form-item>
         <el-form-item :label="$t('mytable.email')" prop="email">
           <el-input v-model="temp.email"/>
@@ -86,6 +88,7 @@
 
 <script>
 import { fetchList, add, update, delete_ } from '@/api/admin'
+import { get } from '@/api/institute'
 import waves from '@/directive/waves' // 水波纹指令
 import { parseTime } from '@/utils'
 
@@ -126,6 +129,7 @@ export default {
     return {
       tableKey: 10,
       list: null,
+      institute: null,
       total: null,
       listLoading: true,
       listQuery: {
@@ -158,6 +162,7 @@ export default {
   },
   created() {
     this.getList()
+    this.getInstitute()
   },
   methods: {
     // 获取列表
@@ -167,6 +172,12 @@ export default {
         this.list = response.data.data.content
         this.total = response.data.data.totalElements
         this.listLoading = false
+      })
+    },
+    // 获取学院
+    getInstitute() {
+      get(this.listQuery).then(response => {
+        this.institute = response.data.data.content
       })
     },
     // 过滤
@@ -237,6 +248,11 @@ export default {
           const tempData = Object.assign({}, this.temp)
           update(tempData.username, tempData).then(() => {
             // 替代数据
+            for (const v of this.institute) {
+              if (v.id === this.temp.institute.id) {
+                this.temp.institute = v
+              }
+            }
             for (const v of this.list) {
               if (v.username === this.temp.username) {
                 const index = this.list.indexOf(v)
